@@ -4,9 +4,9 @@ namespace MauiAppMinhasCompras.Models
     public class Produto
     {
         [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
-        public string Descricao { get; set; }
-        public double Quantidade { get; set; }
-        public double Preco { get; set; }
+        public int Id { get; set; } // Identificador único do produto
+        public string Descricao { get; set; } // Nome ou descrição do produto
+        public double Quantidade { get; set; } // Quantidade do produto
+        public double Preco { get; set; } // Preço unitário do produto
     }
 }   
