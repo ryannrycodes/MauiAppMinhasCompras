@@ -1,5 +1,5 @@
-﻿using SQLite;
-using MauiAppMinhasCompras.Models;
+﻿using MauiAppMinhasCompras.Models;
+using SQLite;
 
 namespace MauiAppMinhasCompras.Helpers
 {
@@ -12,33 +12,37 @@ namespace MauiAppMinhasCompras.Helpers
             _conn = new SQLiteAsyncConnection(path);
             _conn.CreateTableAsync<Produto>().Wait(); // Cria a tabela Produto caso ela ainda não exista
         }
-        
-        public Task<int> Insert(Produto p) 
+
+        public Task<int> Insert(Produto p)
         {
             return _conn.InsertAsync(p); // Insere um novo produto no banco
         }
 
-        public Task<List<Produto>> Update(Produto p) 
+        public Task<List<Produto>> Update(Produto p)
         {
-            string sql = "UPDATE Produto SET Descricao=?, Quantidade=?, Preco=? WHERE Id=?"; // Comando SQL para atualizar um produto
+            // Comando SQL para atualizar um produto
+            string sql = "UPDATE Produto SET Descricao=?, Quantidade=?, Preco=? WHERE Id=?";
 
-            return _conn.QueryAsync<Produto>(sql, p.Descricao, p.Quantidade, p.Preco, p.Id); // Executa a atualização no banco
-
+            // Executa a atualização no banco
+            return _conn.QueryAsync<Produto>(
+                sql, p.Descricao, p.Quantidade, p.Preco, p.Id
+            );
         }
 
-        public Task<int> Delete(int id) 
+        public Task<int> Delete(int id)
         {
             return _conn.Table<Produto>().DeleteAsync(i => i.Id == id); // Deleta um produto pelo Id
         }
 
-        public Task<List<Produto>> GetAll() 
+        public Task<List<Produto>> GetAll()
         {
             return _conn.Table<Produto>().ToListAsync(); // Retorna todos os produtos cadastrados
         }
 
-        public Task<List<Produto>> Search(String q) 
+        public Task<List<Produto>> Search(string q)
         {
-            string sql = "SELECT * Produto WHERE descricao LIKE '%" + q + "%'"; // Busca produtos que contenham o texto informado
+            // Busca produtos que contenham o texto informado
+            string sql = "SELECT * FROM Produto WHERE descricao LIKE '%" + q + "%'";
 
             return _conn.QueryAsync<Produto>(sql);
         }
