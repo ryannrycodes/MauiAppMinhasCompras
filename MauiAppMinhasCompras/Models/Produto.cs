@@ -1,13 +1,37 @@
 ﻿using SQLite;
+
 namespace MauiAppMinhasCompras.Models
 {
     public class Produto
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; } // Identificador único do produto
-        public string Descricao { get; set; } // Nome ou descrição do produto
-        public double Quantidade { get; set; } // Quantidade do produto
-        public double Preco { get; set; } // Preço unitário do produto[
-        public double Total { get => Quantidade * Preco; } // Total Produto
+        string _descricao;
+
+        [PrimaryKey, AutoIncrement] // Define o Id como chave primária com auto incremento no banco
+        public int Id { get; set; }
+
+        public string Descricao
+        {
+            get => _descricao;
+            set
+            {
+                // Validação: impede que a descrição seja nula
+                if (value == null)
+                {
+                    throw new Exception("Por favor, preencha a descrição");
+                }
+
+                _descricao = value;
+            }
+        }
+
+        public double Quantidade { get; set; }
+        public double Preco { get; set; }
+
+        // Propriedade calculada: não é armazenada no banco,
+        // retorna automaticamente Quantidade * Preco
+        public double Total
+        {
+            get => Quantidade * Preco;
+        }
     }
-} 
+}
