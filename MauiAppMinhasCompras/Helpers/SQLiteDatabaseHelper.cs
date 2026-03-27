@@ -1,51 +1,62 @@
-﻿using MauiAppMinhasCompras.Models;
-using SQLite;
+﻿using SQLite;
+using MauiAppMinhasCompras.Models;
 
 namespace MauiAppMinhasCompras.Helpers
 {
-    public class SQLiteDatabaseHelper // Classe responsável por manipular o banco
+    public class SQLiteDatabaseHelper
     {
-        readonly SQLiteAsyncConnection _conn; // Conexão assíncrona com o banco
+        readonly SQLiteAsyncConnection _conn;
 
         public SQLiteDatabaseHelper(string path)
         {
             _conn = new SQLiteAsyncConnection(path);
-            _conn.CreateTableAsync<Produto>().Wait(); // Cria a tabela Produto caso ela ainda não exista
+            _conn.CreateTableAsync<Produto>().Wait();
         }
 
         public Task<int> Insert(Produto p)
         {
-            return _conn.InsertAsync(p); // Insere um novo produto no banco
+            return _conn.InsertAsync(p);
         }
 
-        public Task<List<Produto>> Update(Produto p)
+        public Task<int> Update(Produto p)
         {
-            // Comando SQL para atualizar um produto
-            string sql = "UPDATE Produto SET Descricao=?, Quantidade=?, Preco=? WHERE Id=?";
-
-            // Executa a atualização no banco
-            return _conn.QueryAsync<Produto>(
-                sql, p.Descricao, p.Quantidade, p.Preco, p.Id
-            );
+            return _conn.UpdateAsync(p);
         }
 
         public Task<int> Delete(int id)
         {
-            return _conn.Table<Produto>().DeleteAsync(i => i.Id == id); // Deleta um produto pelo Id
+            return _conn.Table<Produto>().DeleteAsync(i => i.Id == id);
         }
 
         public Task<List<Produto>> GetAll()
         {
-            return _conn.Table<Produto>().ToListAsync(); // Retorna todos os produtos cadastrados
+            return _conn.Table<Produto>().ToListAsync();
         }
 
         public Task<List<Produto>> Search(string q)
         {
-            // Busca produtos que contenham o texto informado
-            string sql = "SELECT * FROM Produto WHERE descricao LIKE '%" + q + "%'";
-
-            return _conn.QueryAsync<Produto>(sql);
+            return _conn.Table<Produto>()
+                        .Where(p => p.Descricao.Contains(q))
+                        .ToListAsync();
         }
 
+        public Task<List<Produto>> GetByCategoria(string categoria)
+        {
+            return _conn.Table<Produto>()
+                        .Where(p => p.Categoria == categoria)
+                        .ToListAsync();
+        }
+
+        public async Task<List<(string Categoria, double Total)>> RelatorioCategoria()
+        {
+            var lista = await GetAll();
+
+            var resultado = lista
+                .GroupBy(p => p.Categoria)
+                .Select(g => (Categoria: g.Key, Total: g.Sum(p => p.Total)))
+                .ToList();
+
+            return resultado;
+        }
     }
 }

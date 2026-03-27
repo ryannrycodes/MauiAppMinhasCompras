@@ -2,7 +2,7 @@ using MauiAppMinhasCompras.Models;
 
 namespace MauiAppMinhasCompras.Views;
 
-public partial class NovoProduto : ContentPage // Tela de cadastro de produto
+public partial class NovoProduto : ContentPage
 {
     public NovoProduto()
     {
@@ -13,20 +13,21 @@ public partial class NovoProduto : ContentPage // Tela de cadastro de produto
     {
         try
         {
-            Produto p = new Produto // Cria um novo objeto Produto
+            Produto p = new Produto
             {
-                Descricao = txt_descricao.Text, // Recebe a descrição digitada
-                Quantidade = Convert.ToDouble(txt_quantidade.Text), // Converte o texto da quantidade para número
-                Preco = Convert.ToDouble(txt_preco.Text) // Converte o texto do preço para número
+                Descricao = txt_descricao.Text,
+                Quantidade = Convert.ToDouble(txt_quantidade.Text),
+                Preco = Convert.ToDouble(txt_preco.Text),
+                Categoria = txt_categoria.Text
             };
 
-            await App.Db.Insert(p); // Insere o produto no bd
-            await DisplayAlert("Sucesso!", "Registro Inserido", "OK"); // Mostra mensagem de sucesso
-
+            await App.Db.Insert(p);
+            await DisplayAlert("Sucesso!", "Registro Inserido", "OK");
+            await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ops", ex.Message, "OK"); // Mostra mensagem de erro caso aconteça algum problema
+            await DisplayAlert("Erro", ex.Message, "OK");
         }
     }
 }
